@@ -1,3 +1,5 @@
+import argparse
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
@@ -8,7 +10,7 @@ import time
 import json
 
 # Cambia el valor por la API_KEY de Anticaptchaoficial
-ANTI_CAPTCHA_KEY = '7a7cc7e7d44f7c6139028cbfacc4f900'
+ANTI_CAPTCHA_KEY = 'YOUR_ANTICAPTCHA_KEY'
 
 def configurar_driver():
     # Configurar el WebDriver de Edge
@@ -93,11 +95,11 @@ def guardar_pagina_como_html(driver):
     with open("consulta.html", "w", encoding="utf-8") as file:
         file.write(driver.page_source)
 
-def main():
+def main(tipo_documento, numero_documento):
     driver = configurar_driver()
     try:
         navegar_a_pagina(driver)
-        llenar_formulario(driver, 'CC', '1006417460')
+        llenar_formulario(driver, tipo_documento, numero_documento)
         captcha_image_url = obtener_captcha_image_url(driver)
         descargar_captcha(captcha_image_url)
         captcha_text = resolver_captcha()
@@ -112,4 +114,13 @@ def main():
         driver.quit()
 
 if __name__ == "__main__":
-    main()
+    # Crear el analizador de argumentos
+    parser = argparse.ArgumentParser(description="Script para consultar EPS en ADRES")
+    parser.add_argument('tipoDoc', type=str, help='Tipo de documento (CC, TI, etc.)')
+    parser.add_argument('numDoc', type=str, help='Número de documento')
+
+    # Parsear los argumentos de la línea de comandos
+    args = parser.parse_args()
+
+    # Llamar a la función principal con los argumentos proporcionados
+    main(args.tipoDoc, args.numDoc)
